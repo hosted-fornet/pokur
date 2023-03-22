@@ -61,7 +61,7 @@
           :-  who
           :^  who  %pokur-host  %pokur-host-action
           %-  crip
-          "[%host-info {<who>} {<(get-address who)>} [(~(got bi:mip configs:test-globals) project:test-globals [{<who>} {<(spat get-escrow-jam-path)>}]) 0x0]]"
+          "[%host-info {<who>} {<(get-address who)>} [(~(got bi:mip configs:test-globals) project-name:test-globals [{<who>} {<(spat get-escrow-jam-path)>}]) 0x0]]"
         ~
     ::
         (make-find-host who)
