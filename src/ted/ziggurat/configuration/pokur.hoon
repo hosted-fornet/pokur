@@ -2,11 +2,18 @@
     spider,
     zig=zig-ziggurat
 /+  mip,
-    zig-threads=zig-ziggurat-threads
+    strandio,
+    ziggurat-threads=zig-ziggurat-threads
 ::
-=*  strand     strand:spider
+=*  strand  strand:spider
+=*  scry    scry:strandio
 ::
 =/  m  (strand ,vase)
+=|  project-name=@t
+=|  desk-name=@tas
+=|  ship-to-address=(map @p @ux)
+=*  zig-threads
+  ~(. ziggurat-threads project-name desk-name ship-to-address)
 |^  ted
 ::
 +$  arg-mold
@@ -44,19 +51,17 @@
 ::
 ++  make-start-apps
   ^-  (list @tas)
-  ~[%subscriber]
+  ~
 ::
 ++  make-service-host
   ^-  @p
   ~nec
 ::
 ++  run-setup-desk
-  |=  $:  project-name=@t
-          desk-name=@tas
-          request-id=(unit @t)
-      ==
+  |=  request-id=(unit @t)
   =/  m  (strand ,vase)
   ^-  form:m
+  ~&  ship-to-address
   %:  setup-desk:zig-threads
       project-name
       desk-name
@@ -69,14 +74,13 @@
   ==
 ::
 ++  setup-virtualship-state
-  |=  project-name=@t
   =/  m  (strand ,vase)
   ^-  form:m
   ;<  state=state-0:zig  bind:m  get-state:zig-threads
   =*  configs  configs.state
   |^
   ;<  contract-hash=@ux  bind:m  setup-nec
-  ;<  ~  bind:m  (setup-bud contract-hash)
+  ;<  ~  bind:m  (setup-bud project-name contract-hash)
   ;<  ~  bind:m  setup-wes
   (pure:m !>(~))
   ::
@@ -86,11 +90,12 @@
     =/  who=@p  ~nec
     ;<  contract-hash-vase=vase  bind:m
       %-  send-wallet-transaction:zig-threads
+      :-  project-name
       :^  who  make-service-host
-        deploy-contract:zig-threads
-      [who get-escrow-jam-path %.n ~]
+        !>(deploy-contract:zig-threads)
+      [who make-escrow-jam-path %.n ~]
     =*  contract-hash  !<(@ux contract-hash-vase)
-    ;<  ~  bind:m
+    ;<  empty-vase=vase  bind:m
       %-  send-discrete-pyro-poke:zig-threads
       :-  project-name
       :^  who  who  %pokur-host
@@ -103,7 +108,7 @@
     (pure:m contract-hash)
   ::
   ++  setup-bud
-    |=  contract-hash=@ux
+    |=  [project-name=@t contract-hash=@ux]
     =/  m  (strand ,~)
     ^-  form:m
     =/  who=@p  ~bud
@@ -111,25 +116,21 @@
     ;<  ~  bind:m  (make-set-our-address who)
     ;<  empty-vase=vase  bind:m
       %-  send-wallet-transaction:zig-threads
+      :-  project-name
       :^  who  make-service-host
-        send-discrete-pyro-poke:zig-threads
+        !>(send-discrete-pyro-poke:zig-threads)
       :-  project-name
       :^  who  who  %pokur
       :-  %pokur-player-action
       !>  ^-  player-action:pokur
       :*  %new-table
           *@da
-      ::
-          :+  make-service-host
-            (get-address make-service-host)
-          [contract-hash make-town-id]
+          make-service-host
       ::
           :-  ~
           :^  `@ux`'zigs-metadata'  'ZIG'
           1.000.000.000.000.000.000  0x0
       ::
-          who
-          ~
           2
           2
           [%sng 1.000 ~m60 ~[[1 2] [2 4] [4 8]] 0 %.n ~[100]]
@@ -151,23 +152,27 @@
     |=  who=@p
     =/  m  (strand ,~)
     ^-  form:m
-    %-  send-discrete-pyro-poke:zig-threads
-    :-  project-name
-    :^  who  who  %pokur
-    :-  %pokur-player-action
-    !>  ^-  player-action:pokur
-    [%find-host make-service-host]
+    ;<  empty-vase=vase  bind:m
+      %-  send-discrete-pyro-poke:zig-threads
+      :-  project-name
+      :^  who  who  %pokur
+      :-  %pokur-player-action
+      !>  ^-  player-action:pokur
+      [%find-host make-service-host]
+    (pure:m ~)
   ::
   ++  make-set-our-address
     |=  who=@p
     =/  m  (strand ,~)
     ^-  form:m
-    %-  send-discrete-pyro-poke:zig-threads
-    :-  project-name
-    :^  who  who  %pokur
-    :-  %pokur-player-action
-    !>  ^-  player-action:pokur
-    [%set-our-address (get-address who)]
+    ;<  empty-vase=vase  bind:m
+      %-  send-discrete-pyro-poke:zig-threads
+      :-  project-name
+      :^  who  who  %pokur
+      :-  %pokur-player-action
+      !>  ^-  player-action:pokur
+      [%set-our-address (get-address who)]
+    (pure:m ~)
   ::
   ++  make-town-id
     ^-  @ux
@@ -177,11 +182,14 @@
     ^-  @p
     ~nec
   ::
+  ++  make-escrow-jam-path
+    ^-  path
+    /con/compiled/escrow/jam
+  ::
   ++  get-address
     |=  who=@p
     ^-  @ux
-    %-  ~(got bi:mip configs)
-    ['global' [who %address]]
+    (~(got by ship-to-address) who)
   --
 ::
 ++  ted
@@ -193,16 +201,23 @@
     ~&  >>>  "Usage:"
     ~&  >>>  "-pokur!ziggurat-configuration-pokur project-name=@t desk-name=@tas request-id=(unit @t)"
     (pure:m !>(~))
-  =*  project-name  project-name.u.args
-  =*  desk-name     desk-name.u.args
+  =.  project-name  project-name.u.args
+  =.  desk-name     desk-name.u.args
   =*  request-id    request-id.u.args
   ::
   ~&  %zcp^%top^%0
+  ;<  =update:zig  bind:m
+    %+  scry  update:zig
+    /gx/ziggurat/get-ship-to-address-map/[project-name]/noun
+  =.  ship-to-address
+    ?>  ?=(^ update)
+    ?>  ?=(%ship-to-address-map -.update)
+    ?>  ?=(%& -.payload.update)
+    p.payload.update
   ;<  setup-desk-result=vase  bind:m
-    (run-setup-desk project-name desk-name request-id)
+    (run-setup-desk request-id)
   ~&  %zcp^%top^%1
-  ;<  setup-ships-result=vase  bind:m
-    (setup-virtualship-state project-name)
+  ;<  setup-ships-result=vase  bind:m  setup-virtualship-state
   ~&  %zcp^%top^%2
   (pure:m !>(`(each ~ @t)`[%.y ~]))
 --
