@@ -66,6 +66,7 @@
       project-name
       desk-name
       request-id
+      !>(~)
       make-config
       make-state-views
       make-virtualships-to-sync
