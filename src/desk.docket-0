@@ -4,7 +4,7 @@
     glob-http+['https://poker-app-distro.s3.us-east-2.amazonaws.com/glob-0v5.u1om2.q638r.thi3j.h1noj.11u6a.glob' 0v5.u1om2.q638r.thi3j.h1noj.11u6a]
     image+'https://poker-app-distro.s3.us-east-2.amazonaws.com/pokur-logo-2.png'
     base+'pokur'
-    version+[0 2 1]
+    version+[0 2 2]
     website+'https://uqbar.network/pokur'
     license+'MIT'
 ==
