@@ -607,7 +607,7 @@
           %poke   %pokur-txn-player-action
           !>  ^-  txn-player-action
           :+  %new-table-txn
-            +.+.update  ::  receipt
+            +>+.update  ::  receipt
           u.pending-poke.state(bond-id.u.tokenized noun.event)
       ==
     ::
@@ -624,7 +624,7 @@
           %agent  [host %pokur-host]
           %poke   %pokur-txn-player-action
           !>  ^-  txn-player-action
-          [%join-table-txn +.+.update u.pending-poke.state]
+          [%join-table-txn +>+.update u.pending-poke.state]
       ==
     ==
   ==
