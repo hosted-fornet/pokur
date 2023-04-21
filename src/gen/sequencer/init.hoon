@@ -2,10 +2,13 @@
 /+  ethereum, merk, smart=zig-sys-smart
 /=  zigs-mar      /con/mar/zigs
 /=  escrow-mar    /con/mar/escrow
-/*  zigs-contract      %jam  /con/compiled/zigs/jam
-/*  escrow-contract    %jam  /con/compiled/escrow/jam
 :-  %say
 |=  [[now=@da eny=@uvJ bek=beak] [rollup-host=@p town-id=@ux private-key=@ux ~] ~]
+=*  scry-prefix=path  /(scot %p p.bek)/[q.bek]/(scot %da now)/con/compiled
+=/  zigs-contract=@
+  .^(@ %cx (weld scry-prefix /zigs/jam))
+=/  escrow-contract=@
+  .^(@ %cx (weld scry-prefix /escrow/jam))
 ::  one hundred million testnet zigs, now and forever
 =/  testnet-zigs-supply  100.000.000.000.000.000.000.000.000
 ::
